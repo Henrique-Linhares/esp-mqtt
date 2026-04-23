@@ -1,10 +1,10 @@
-# 🌡️ Monitoramento IoT — ESP32 + DHT + MQTT + Node-RED
+#  Monitoramento IoT — ESP32 + DHT + MQTT + Node-RED
 
 Sistema de monitoramento ambiental em tempo real utilizando ESP32, sensor DHT, broker MQTT e dashboard Node-RED, com análise estatística dos dados coletados via Python.
 
 ---
 
-## 📋 Visão Geral
+##  Visão Geral
 
 ```
 ESP32 + DHT  ──→  Broker MQTT  ──→  Node-RED  ──→  Dashboard
@@ -16,7 +16,7 @@ O firmware na ESP32 lê temperatura e umidade do sensor DHT e publica os dados n
 
 ---
 
-## 📁 Estrutura do Repositório
+##  Estrutura do Repositório
 
 ```
 ├── esp-mqtt.ino       # Firmware Arduino para ESP32 + DHT
@@ -27,7 +27,7 @@ O firmware na ESP32 lê temperatura e umidade do sensor DHT e publica os dados n
 
 ---
 
-## 🔧 Hardware Necessário
+##  Hardware Necessário
 
 - ESP32 
 - Sensor DHT11
@@ -77,7 +77,7 @@ Acesse a dashboard em: `http://IP_DO_NODERED:1880/ui`
 
 ---
 
-## 📊 Fluxo Node-RED
+##  Fluxo Node-RED
 
 O fluxo possui duas seções principais:
 
@@ -102,7 +102,7 @@ Temperatura,Umidade,Timestamp
 
 ---
 
-## 🐍 Análise Estatística (`app_mqtt.py`)
+## Análise Estatística (`app_mqtt.py`)
 
 Script executado no Google Colab. Faz upload do CSV exportado e calcula:
 
@@ -116,7 +116,7 @@ Script executado no Google Colab. Faz upload do CSV exportado e calcula:
 Ao final, gera um gráfico de linha com a tendência histórica de ambas as variáveis, incluindo linhas de referência para as médias.
 
 
-## 🌐 Tópicos MQTT
+## Tópicos MQTT
 
 | Tópico | Direção | Conteúdo |
 |--------|---------|----------|
@@ -124,7 +124,7 @@ Ao final, gera um gráfico de linha com a tendência histórica de ambas as vari
 
 ---
 
-## 🛠️ Tecnologias Utilizadas
+## Tecnologias Utilizadas
 
 - **ESP32** + Arduino IDE
 - **MQTT** (broker local na rede)
