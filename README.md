@@ -33,16 +33,6 @@ O firmware na ESP32 lê temperatura e umidade do sensor DHT e publica os dados n
 - Sensor DHT11
 - Broker MQTT acessível na rede local
 
-**Ligação do sensor:**
-
-| Pino DHT | ESP32 |
-|----------|-------|
-| VCC      | 3.3V  |
-| DATA     | GPIO 4 |
-| GND      | GND   |
-
----
-
 ## ⚙️ Configuração
 
 ### 1. Firmware (`esp-mqtt.ino`)
