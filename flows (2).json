@@ -1,6 +1,6 @@
 [
     {
-        "id": "33c2487104eb35db",
+        "id": "6078a909eddd1d81",
         "type": "tab",
         "label": "Fluxo 3",
         "disabled": false,
@@ -8,131 +8,98 @@
         "env": []
     },
     {
-        "id": "file_out",
-        "type": "file",
-        "z": "33c2487104eb35db",
-        "name": "Gravar Arquivo",
-        "filename": "dados_sensores.csv",
-        "filenameType": "str",
-        "appendNewline": false,
-        "createDir": true,
-        "overwriteFile": "false",
-        "x": 1200,
-        "y": 260,
-        "wires": [
-            []
-        ]
-    },
-    {
-        "id": "f82a9ba339364fcb",
+        "id": "e4a705c21dfc0218",
         "type": "mqtt in",
-        "z": "33c2487104eb35db",
+        "z": "6078a909eddd1d81",
         "name": "MQTT Temp",
-        "topic": "ads/iniot/temperatura",
+        "topic": "iiot/desafio2",
         "qos": "2",
-        "broker": "broker_local",
+        "datatype": "auto-detect",
+        "broker": "bbfa2ef183882565",
+        "nl": false,
+        "rap": false,
         "inputs": 0,
-        "x": 330,
-        "y": 200,
+        "x": 350,
+        "y": 260,
         "wires": [
             [
-                "fn_parse",
-                "7b135f3bcc645b4a",
-                "chart_temp"
+                "5febc4d0a338cb21"
             ]
         ]
     },
     {
-        "id": "e336774756ef7027",
-        "type": "mqtt in",
-        "z": "33c2487104eb35db",
-        "name": "MQTT Umid",
-        "topic": "ads/iniot/umidade",
-        "qos": "2",
-        "broker": "broker_local",
-        "inputs": 0,
-        "x": 370,
-        "y": 380,
-        "wires": [
-            [
-                "fn_parse",
-                "afdab0219538da80",
-                "chart_umid"
-            ]
-        ]
-    },
-    {
-        "id": "fn_parse",
+        "id": "5febc4d0a338cb21",
         "type": "function",
-        "z": "33c2487104eb35db",
+        "z": "6078a909eddd1d81",
         "name": "Parse & Join",
-        "func": "var val = parseFloat(msg.payload);\nif (isNaN(val)) return null;\nmsg.payload = val;\nreturn msg;",
-        "outputs": 1,
-        "x": 690,
-        "y": 260,
-        "wires": [
-            [
-                "join_csv"
-            ]
-        ]
-    },
-    {
-        "id": "join_csv",
-        "type": "join",
-        "z": "33c2487104eb35db",
-        "name": "Unir Dados",
-        "mode": "custom",
-        "build": "object",
-        "property": "payload",
-        "propertyType": "msg",
-        "key": "topic",
-        "joiner": "",
-        "joinerType": "str",
-        "useparts": true,
-        "accumulate": false,
+        "func": "var t = msg.payload.temperatura;\nvar u = msg.payload.umidade;\n\nif (t === undefined || u === undefined) {\n    node.warn(\"Payload inválido: \" + JSON.stringify(msg.payload));\n    return null;\n}\n\nreturn [\n    [{ payload: t, topic: \"temperatura\" }],\n    [{ payload: u, topic: \"umidade\" }],\n    [{ payload: { temperatura: t, umidade: u } }]\n];",
+        "outputs": 3,
         "timeout": "",
-        "count": "2",
-        "reduceRight": false,
-        "reduceExp": "",
-        "reduceInit": "",
-        "reduceInitType": "",
-        "reduceFixup": "",
-        "x": 850,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 590,
         "y": 260,
         "wires": [
             [
-                "fn_csv_line"
+                "1bb0555827401c2d",
+                "49d684c20b09b9f1"
+            ],
+            [
+                "8fb5463edc3a2152",
+                "34179b7b2234972b"
+            ],
+            [
+                "3c34b23b2d43e093"
             ]
         ]
     },
     {
-        "id": "fn_csv_line",
+        "id": "3c34b23b2d43e093",
         "type": "function",
-        "z": "33c2487104eb35db",
+        "z": "6078a909eddd1d81",
         "name": "Formatar CSV",
-        "func": "var t = msg.payload[\"ads/iniot/temperatura\"];\nvar u = msg.payload[\"ads/iniot/umidade\"];\nvar agora = new Date();\nvar d = agora.toLocaleDateString('pt-BR');\nvar h = agora.toLocaleTimeString('pt-BR');\n\nmsg.payload = t + \",\" + u + \",\" + d + \",\" + h + \"\\n\";\nreturn msg;",
+        "func": "var t = msg.payload.temperatura;\nvar u = msg.payload.umidade;\n\nvar zulu = new Date().toISOString().replace(/\\.\\d{3}/, '');\n\nmsg.payload = t + \",\" + u + \",\" + zulu + \"\\n\";\nreturn msg;",
         "outputs": 1,
         "timeout": "",
         "noerr": 0,
         "initialize": "",
         "finalize": "",
         "libs": [],
-        "x": 1020,
+        "x": 940,
         "y": 260,
         "wires": [
             [
-                "file_out"
+                "a890190312744792"
             ]
         ]
     },
     {
-        "id": "7b135f3bcc645b4a",
+        "id": "a890190312744792",
+        "type": "file",
+        "z": "6078a909eddd1d81",
+        "name": "Gravar Arquivo",
+        "filename": "dados.csv",
+        "filenameType": "str",
+        "appendNewline": false,
+        "createDir": true,
+        "overwriteFile": "false",
+        "x": 1160,
+        "y": 260,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "1bb0555827401c2d",
         "type": "ui_gauge",
-        "z": "33c2487104eb35db",
+        "z": "6078a909eddd1d81",
+        "name": "",
         "group": "group_monitor",
         "order": 1,
-        "width": 3,
-        "height": 3,
+        "width": "6",
+        "height": "6",
         "gtype": "gage",
         "title": "Temp",
         "label": "°C",
@@ -144,18 +111,23 @@
             "#e6e600",
             "#ca3838"
         ],
-        "x": 590,
-        "y": 200,
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 830,
+        "y": 180,
         "wires": []
     },
     {
-        "id": "afdab0219538da80",
+        "id": "8fb5463edc3a2152",
         "type": "ui_gauge",
-        "z": "33c2487104eb35db",
+        "z": "6078a909eddd1d81",
+        "name": "",
         "group": "group_monitor",
         "order": 2,
-        "width": 3,
-        "height": 3,
+        "width": "6",
+        "height": "6",
         "gtype": "gage",
         "title": "Umid",
         "label": "%",
@@ -167,14 +139,18 @@
             "#0066ff",
             "#0033cc"
         ],
-        "x": 650,
-        "y": 460,
+        "seg1": "",
+        "seg2": "",
+        "diff": false,
+        "className": "",
+        "x": 890,
+        "y": 340,
         "wires": []
     },
     {
-        "id": "chart_temp",
+        "id": "49d684c20b09b9f1",
         "type": "ui_chart",
-        "z": "33c2487104eb35db",
+        "z": "6078a909eddd1d81",
         "name": "",
         "group": "group_monitor",
         "order": 3,
@@ -183,7 +159,7 @@
         "label": "Histórico Temperatura",
         "chartType": "line",
         "legend": "false",
-        "xformat": "HH:mm",
+        "xformat": "HH:mm:ss",
         "nodata": "",
         "dot": false,
         "ymin": "0",
@@ -208,16 +184,16 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 620,
+        "x": 900,
         "y": 100,
         "wires": [
             []
         ]
     },
     {
-        "id": "chart_umid",
+        "id": "34179b7b2234972b",
         "type": "ui_chart",
-        "z": "33c2487104eb35db",
+        "z": "6078a909eddd1d81",
         "name": "",
         "group": "group_monitor",
         "order": 4,
@@ -251,16 +227,16 @@
         "outputs": 1,
         "useDifferentColor": false,
         "className": "",
-        "x": 650,
-        "y": 380,
+        "x": 910,
+        "y": 420,
         "wires": [
             []
         ]
     },
     {
-        "id": "btn_download",
+        "id": "22a428f21b604b99",
         "type": "ui_button",
-        "z": "33c2487104eb35db",
+        "z": "6078a909eddd1d81",
         "group": "group_monitor",
         "order": 5,
         "width": 6,
@@ -270,55 +246,57 @@
         "bgcolor": "#008080",
         "icon": "fa-download",
         "x": 440,
-        "y": 580,
-        "wires": [
-            [
-                "read_csv_file"
-            ]
-        ]
-    },
-    {
-        "id": "read_csv_file",
-        "type": "file in",
-        "z": "33c2487104eb35db",
-        "name": "Ler CSV",
-        "filename": "dados_sensores.csv",
-        "format": "utf8",
-        "chunk": false,
-        "x": 700,
         "y": 600,
         "wires": [
             [
-                "dl_trigger_fix",
-                "clear_msg"
+                "b35e55fe0bd19e95"
             ]
         ]
     },
     {
-        "id": "dl_trigger_fix",
+        "id": "b35e55fe0bd19e95",
+        "type": "file in",
+        "z": "6078a909eddd1d81",
+        "name": "Ler CSV",
+        "filename": "dados.csv",
+        "filenameType": "str",
+        "format": "utf8",
+        "chunk": false,
+        "allProps": false,
+        "x": 680,
+        "y": 600,
+        "wires": [
+            [
+                "1431165c9c78d4d8",
+                "9b7c6bd12b0c2e11"
+            ]
+        ]
+    },
+    {
+        "id": "1431165c9c78d4d8",
         "type": "ui_template",
-        "z": "33c2487104eb35db",
+        "z": "6078a909eddd1d81",
         "group": "group_monitor",
         "name": "JS Download Fixo",
         "order": 6,
         "width": "",
         "height": "",
-        "format": "<script>\n(function(scope) {\n    scope.$watch('msg', function(msg) {\n        if (msg && msg.payload && msg.payload.length > 0) {\n            var head = \"Temperatura,Umidade,Data,Hora\\n\";\n            var blob = new Blob([head + msg.payload], {type: 'text/csv'});\n            var a = document.createElement('a');\n            a.href = window.URL.createObjectURL(blob);\n            a.download = 'sensores_historico.csv';\n            a.click();\n            scope.send({payload: \"\"});\n        }\n    });\n})(scope);\n</script>",
+        "format": "<script>\n(function(scope) {\n    scope.$watch('msg', function(msg) {\n        if (msg && msg.payload && msg.payload.length > 0) {\n            var head = \"Temperatura,Umidade,Timestamp\\n\";\n            var blob = new Blob([head + msg.payload], {type: 'text/csv'});\n            var a = document.createElement('a');\n            a.href = window.URL.createObjectURL(blob);\n            a.download = 'dados.csv';\n            a.click();\n            scope.send({payload: \"\"});\n        }\n    });\n})(scope);\n</script>",
         "storeOutMessages": false,
         "fwdInMessages": true,
         "resendOnRefresh": false,
         "templateScope": "local",
         "className": "",
-        "x": 910,
-        "y": 580,
+        "x": 900,
+        "y": 560,
         "wires": [
             []
         ]
     },
     {
-        "id": "clear_msg",
+        "id": "9b7c6bd12b0c2e11",
         "type": "change",
-        "z": "33c2487104eb35db",
+        "z": "6078a909eddd1d81",
         "name": "Limpar Fluxo",
         "rules": [
             {
@@ -334,63 +312,38 @@
         "from": "",
         "to": "",
         "reg": false,
-        "x": 890,
-        "y": 660,
+        "x": 900,
+        "y": 640,
         "wires": [
             []
         ]
     },
     {
-        "id": "1f572541c641325f",
-        "type": "inject",
-        "z": "33c2487104eb35db",
-        "name": "",
-        "props": [
-            {
-                "p": "payload"
-            },
-            {
-                "p": "topic",
-                "vt": "str"
-            }
-        ],
-        "repeat": "",
-        "crontab": "",
-        "once": false,
-        "onceDelay": 0.1,
-        "topic": "",
-        "payload": "",
-        "payloadType": "date",
-        "x": 340,
-        "y": 100,
-        "wires": [
-            [
-                "chart_temp"
-            ]
-        ]
-    },
-    {
-        "id": "broker_local",
+        "id": "bbfa2ef183882565",
         "type": "mqtt-broker",
-        "name": "Broker Local",
-        "broker": "10.110.18.11",
-        "port": "1883",
+        "name": "Desafio 2",
+        "broker": "10.110.12.65",
+        "port": 1883,
         "clientid": "",
         "autoConnect": true,
         "usetls": false,
-        "protocolVersion": 4,
-        "keepalive": 15,
+        "protocolVersion": "3",
+        "keepalive": 60,
         "cleansession": true,
         "autoUnsubscribe": true,
         "birthTopic": "",
         "birthQos": "0",
+        "birthRetain": "false",
         "birthPayload": "",
         "birthMsg": {},
         "closeTopic": "",
+        "closeQos": "0",
+        "closeRetain": "false",
         "closePayload": "",
         "closeMsg": {},
         "willTopic": "",
         "willQos": "0",
+        "willRetain": "false",
         "willPayload": "",
         "willMsg": {},
         "userProps": "",
@@ -413,7 +366,7 @@
         "name": "Dashboard IoT"
     },
     {
-        "id": "1fefbc3ef39621f9",
+        "id": "eb9ba8d09d55508c",
         "type": "global-config",
         "env": [],
         "modules": {
